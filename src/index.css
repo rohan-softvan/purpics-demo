@@ -80,7 +80,7 @@ body {
   width: 100%;
 }
 .pivotTable{
-  width: 700px !important;
+  /* width: 700px !important; */
   display: flex;
 }
 #wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{

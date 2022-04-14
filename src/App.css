@@ -39,7 +39,7 @@
   border-color: transparent !important;
 }
 .wdr-measure-header {
-  width: 200px !important;
+  width: 100px;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   word-break: normal !important;

@@ -4,6 +4,9 @@ import * as WebDataRocksReact from "react-webdatarocks";
 import "webdatarocks/webdatarocks.highcharts";
 import { DataJson } from "./DataJson";
 import { DataJson2 } from "./DataJson2";
+import DragDropComponent from "./DragDropComponent";
+
+let count = 0;
 
 const PurpicsPivot = () => {
   const [data, setData] = useState(DataJson);
@@ -11,6 +14,7 @@ const PurpicsPivot = () => {
   const [metaData, setMetaData] = useState({ totalRows: null, totalColumns: null })
   const [newTitle, setNewTitle] = useState("");
   const [display, setDisplay] = useState(true);
+  const [selectedItems, setSelectedItems] = useState({ rows: [], columns: [] });
   const [rows, setRows] = useState([
     {
       uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
@@ -46,6 +50,15 @@ const PurpicsPivot = () => {
 
   let myRef = useRef();
 
+  const handleOnChange = event => {
+    const type = count % 2 === 0 ? "rows" : "columns";
+    let random = Math.floor(Math.random() * 100 + 1);
+    let object = { id: `item-${random}`, content: event.target.value };
+    selectedItems[type].push(object);
+    count++;
+    setSelectedItems({ ...selectedItems });
+  };
+
   const reportComplete = () => {
     console.log(">>>>>", myRef.webdatarocks.getReport());
   };
@@ -59,7 +72,7 @@ const PurpicsPivot = () => {
 
       function (data) {
         console.log("data", data);
-        data.chart.height = config.height
+        // data.chart.height = config.height
         data.chart.reflow = config.reflow
         data.title = {
           text: config.title,
@@ -75,6 +88,7 @@ const PurpicsPivot = () => {
       },
       function (data) {
         Highcharts.chart("highchartsContainer", data);
+        // Highcharts.reflow();
       }
     );
   };
@@ -88,68 +102,69 @@ const PurpicsPivot = () => {
         type: "classic"
       }
     },
-    tableSizes: {
-      columns: [
-        {
-          idx: 0,
-          width: 200
-        },
-        {
-          idx: 1,
-          width: 100
-        },
-        {
-          idx: 2,
-          width: 100
-        },
-        {
-          idx: 3,
-          width: 100
-        },
-        {
-          idx: 4,
-          width: 100
-        },
-        {
-          idx: 5,
-          width: 100
-        },
-        {
-          idx: 6,
-          width: 100
-        },
-        {
-          idx: 7,
-          width: 100
-        },
-        {
-          idx: 8,
-          width: 100
-        },
-        {
-          idx: 9,
-          width: 100
-        },
-        {
-          idx: 10,
-          width: 100
-        },
-        {
-          idx: 11,
-          width: 100
-        },
-        {
-          idx: 12,
-          width: 100
-        }
-      ]
-    },
+    // tableSizes: {
+    //   columns: [
+    //     {
+    //       idx: 0,
+    //       width: 200
+    //     },
+    //     {
+    //       idx: 1,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 2,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 3,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 4,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 5,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 6,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 7,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 8,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 9,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 10,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 11,
+    //       width: 100
+    //     },
+    //     {
+    //       idx: 12,
+    //       width: 100
+    //     }
+    //   ]
+    // },
+
     slice: {
       rows: rows,
       columns: columns,
       measures: measures,
       expands: {
-        expandAll: true,
+        expandAll: false,
         // "rows": [
         //   {
         //     "tuple": [
@@ -241,14 +256,11 @@ const PurpicsPivot = () => {
 
     setData(DataJson);
     setMeasures([
+
       {
-        uniqueName:
-          "Q20 Would you be interested in ordering from a food locker like this?",
+        uniqueName: "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
         sort: "asc",
-        aggregation:'sum',
-      },
-      {
-        uniqueName: "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?", sort: "asc",aggregation:'sum',
+        aggregation: 'sum',
       }
     ]);
     setRows([
@@ -289,6 +301,7 @@ const PurpicsPivot = () => {
     console.log("type: ", type)
     config.type = type
     setConfig({ ...config })
+    createChart()
   }
 
   const handleNewTtileChange = (e) => {
@@ -298,7 +311,7 @@ const PurpicsPivot = () => {
   const handleTitleSave = () => {
     config.title = newTitle;
     setConfig({ ...config })
-
+    createChart()
   }
   const handleResize = () => {
     console.log("Checked Resieze Event")
@@ -312,17 +325,25 @@ const PurpicsPivot = () => {
       setMetaData({ totalRows: null, totalColumns: null })
       setDisplay(true);
     }, 50);
-  }, [rows, columns, measures, config]);
+  }, [rows, columns, measures]);
+
+
+  useEffect(() => {
+
+  }, [])
 
   return (
+    // style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}
     display && <div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+      <div >
         <div className="pivotTable">
           <div style={{ width: '500px !important', minWidth: '700px' }}>
             <WebDataRocksReact.Pivot
               ref={(elem) => {
                 myRef = elem;
               }}
+              width={"100%"}
+              height={"100%"}
               toolbar={true}
               report={report}
               reportcomplete={() => {
@@ -347,7 +368,18 @@ const PurpicsPivot = () => {
             />
           </div>
         </div>
-        <div className="charResize">
+        <div className="charResize" onMouseUpCapture={() => {
+          console.log('reflow==>');
+          Highcharts.charts.forEach(function (chart, index) {
+            if (chart) {
+              if (chart.renderTo.id === 'highchartsContainer') {
+                // chart.exporting.filename='custom-file-name';
+                // chosenChart = chart;
+                chart.reflow();
+              }
+            }
+          });
+        }}>
           <div id="highchartsContainer" />
         </div>
 
@@ -364,6 +396,30 @@ const PurpicsPivot = () => {
         </div>
         <button onClick={handleChangeData} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Append New Data</button>
       </div>
+      <hr />
+      <div>
+        <input
+          type="checkbox"
+          onChange={handleOnChange}
+          value={"Q1: Some Question Q1"}
+        />{" "}
+        Q1: Some Question Q1 <br />
+        <input
+          type="checkbox"
+          onChange={handleOnChange}
+          value={"Q2: Some Question Q2"}
+        />{" "}
+        Q2: Some Question Q2 <br />
+        <input
+          type="checkbox"
+          onChange={handleOnChange}
+          value={"Q3: Some Question Q3"}
+        />{" "}
+        Q3: Some Question Q3 <br />
+        <br />
+        <DragDropComponent selectedItems={selectedItems} />
+      </div>
+
     </div>
 
   );
