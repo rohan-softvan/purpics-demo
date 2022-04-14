@@ -70,15 +70,23 @@ const PurpicsPivot = () => {
         type: config.type,
       },
 
-      function(data) {
+      function (data) {
         console.log("data", data);
         // data.chart.height = config.height
+        data.chart.backgroundColor = '#ccc'
+        data.chart.borderColor = '#EBBA95';
+        data.chart.borderRadius = 20;
+        data.chart.borderWidth = 2
         data.chart.reflow = config.reflow
         data.title = {
           text: config.title,
           style: {
             color: "#000",
-            fontWeight: "bold"
+            fontWeight: "bold",
+            // fontFamily: 'Roboto',
+            // fontFamily: 'Rubik',
+            // fontFamily: 'Roboto slab',
+            // fontFamily: 'Script MT',
           }
         };
         data.credits = {
@@ -89,7 +97,7 @@ const PurpicsPivot = () => {
         };
         Highcharts.chart("highchartsContainer", data);
       },
-      function(data) {
+      function (data) {
         Highcharts.chart("highchartsContainer", data);
         // Highcharts.reflow();
       }
