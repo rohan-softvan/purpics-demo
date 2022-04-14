@@ -60,6 +60,14 @@ const PurpicsPivot = () => {
     console.log(">>>>>", myRef.webdatarocks.getReport());
   };
 
+  const handleTitleClick = event => {
+    console.log("handleTitleClick invoked 😁");
+  };
+
+  const handleSubTitleClick = event => {
+    console.log("handleSubTitleClick invoked 😄");
+  };
+
   const createChart = () => {
     myRef.webdatarocks.highcharts.getData(
       {
@@ -70,12 +78,31 @@ const PurpicsPivot = () => {
         console.log("data", data);
         data.chart.height = config.height;
         data.chart.reflow = config.reflow;
+        data.chart.events = {
+          load: function() {
+            console.log("loaded chart");
+            document
+              .getElementById("custom-title")
+              .addEventListener("click", handleTitleClick);
+            document
+              .getElementById("custom-subtitle")
+              .addEventListener("click", handleSubTitleClick);
+          }
+        };
         data.title = {
-          text: config.title,
+          text: `<p style="color: red;cursor:pointer;" id="custom-title"> LOL </p>`,
           style: {
             color: "#000",
-            fontWeight: "bold"
-          }
+            fontWeight: "bold",
+            fontFamily: "Roboto",
+          },
+        };
+        data.subtitle = {
+          text: `<p style="color: blue;cursor:pointer;" id="custom-subtitle"> LOL-subtitle </p>`,
+          style: {
+            color: "#000",
+            fontWeight: "normal"
+          },
         };
         data.credits = {
           enabled: false
@@ -380,9 +407,9 @@ const PurpicsPivot = () => {
             </div>
           </div>
           {/*{graphDisplay && (*/}
-            <div className="charResize">
-              <div id="highchartsContainer" />
-            </div>
+          <div className="charResize">
+            <div id="highchartsContainer" />
+          </div>
           {/*)}*/}
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
