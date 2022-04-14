@@ -3,3 +3,86 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+#wdr-pivot-view .wdr-grid-layout div.wdr-row{
+  display: flex;
+}
+/*#wdr-pivot-view .wdr-grid-layout div.wdr-row > div{
+  height: auto !important;
+  display: block;
+}
+#wdr-pivot-view .wdr-grid-layout .wdr-cell{
+  white-space:normal !important;
+  text-overflow:initial !important;
+  overflow:initial !important;
+}
+.wdr-header {
+  width: 200px !important;
+}  */
+
+.wdr-row .wdr-grand-total{
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+/* #wdr-rows-filter .wdr-row .wdr-draggable{
+  height: auto !important;
+  text-overflow:initial !important;
+  overflow:initial !important;
+  white-space:normal !important;
+} */
+/* .wdr-grid-row {
+  height: 60px !important;
+} */
+
+
+
+.chartResize .resizer-right {
+  width: 5px;
+  height: 100%;
+  background: transparent;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: e-resize;
+}
+
+.chartResize .resizer-bottom {
+  width: 100%;
+  height: 5px;
+  background: transparent;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: n-resize;
+}
+
+.chartResize .resizer-both {
+  width: 5px;
+  height: 5px;
+  background: transparent;
+  z-index: 10;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: nw-resize;
+}
+
+/*NOSELECT*/
+
+.chartResize{
+  border:2px solid #000;
+  background-color: #ccc;
+}
+.charResize{
+  overflow:auto;
+  resize: both;
+}
+#highchartsContainer{
+  width: 100%;
+}
+.pivotTable{
+  width: 700px !important;
+  display: flex;
+}
+#wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{
+  min-width: 50%;
+}
