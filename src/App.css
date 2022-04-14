@@ -23,9 +23,52 @@
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
+.wdr-header {
+  width: 200px !important;
+}
+/*#wdr-pivot-view .wdr-grid-layout .wdr-empty {*/
+/*  border-color: transparent !important;*/
+/*}*/
+
+/*#wdr-pivot-view .wdr-grid-layout #wdr-data-sheet {*/
+/*  border-color: transparent !important;*/
+/*}*/
+.wdr-credits {
+  display: none;
+}
+
+.resize {
+  border: 1px solid black;
+  overflow: auto;
+}
+.resize.both {
+  resize: both;
+}
+.wrap {
+  max-width: 80%;
+}
+
+#wdr-pivot-view .wdr-grid-layout #wdr-data-sheet {
+  border-color: transparent !important;
+}
+.wdr-measure-header {
+  width: 200px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  word-break: normal !important;
+  min-width: auto !important;
+  white-space:nowrap !important;
+}
+/* .wdr-collapsed, .wdr-empty, .wdr-v-sort{
+  display: none !important;
+} */
 
 .wdr-credits{
   display: none;

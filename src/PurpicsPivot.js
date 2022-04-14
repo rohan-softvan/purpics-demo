@@ -18,8 +18,8 @@ const PurpicsPivot = () => {
   const [rows, setRows] = useState([
     {
       uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
-      sort: "asc",
-    },
+      sort: "asc"
+    }
     // {
     //   "uniqueName": "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
     //   "sort": "asc"
@@ -29,8 +29,8 @@ const PurpicsPivot = () => {
     {
       uniqueName:
         "Q20 Would you be interested in ordering from a food locker like this?",
-      sort: "asc",
-    },
+      sort: "asc"
+    }
   ]);
   const [measures, setMeasures] = useState([
     {
@@ -70,7 +70,7 @@ const PurpicsPivot = () => {
         type: config.type,
       },
 
-      function (data) {
+      function(data) {
         console.log("data", data);
         // data.chart.height = config.height
         data.chart.reflow = config.reflow
@@ -78,15 +78,18 @@ const PurpicsPivot = () => {
           text: config.title,
           style: {
             color: "#000",
-            fontWeight: "bold",
-          },
+            fontWeight: "bold"
+          }
+        };
+        data.credits = {
+          enabled: false
         };
         data.credits = {
           enabled: false
         };
         Highcharts.chart("highchartsContainer", data);
       },
-      function (data) {
+      function(data) {
         Highcharts.chart("highchartsContainer", data);
         // Highcharts.reflow();
       }
@@ -95,12 +98,64 @@ const PurpicsPivot = () => {
 
   const report = {
     dataSource: {
-      data: data,
+      data: data
     },
-    options: {
-      grid: {
-        type: "classic"
-      }
+
+    tableSizes: {
+      columns: [
+        {
+          idx: 0,
+          width: 200
+        },
+        {
+          idx: 1,
+          width: 100
+        },
+        {
+          idx: 2,
+          width: 100
+        },
+        {
+          idx: 3,
+          width: 100
+        },
+        {
+          idx: 4,
+          width: 100
+        },
+        {
+          idx: 5,
+          width: 100
+        },
+        {
+          idx: 6,
+          width: 100
+        },
+        {
+          idx: 7,
+          width: 100
+        },
+        {
+          idx: 8,
+          width: 100
+        },
+        {
+          idx: 9,
+          width: 100
+        },
+        {
+          idx: 10,
+          width: 100
+        },
+        {
+          idx: 11,
+          width: 100
+        },
+        {
+          idx: 12,
+          width: 100
+        }
+      ]
     },
     // tableSizes: {
     //   columns: [
@@ -164,7 +219,7 @@ const PurpicsPivot = () => {
       columns: columns,
       measures: measures,
       expands: {
-        expandAll: false,
+        expandAll: true
         // "rows": [
         //   {
         //     "tuple": [
@@ -181,8 +236,8 @@ const PurpicsPivot = () => {
         // ]
       },
       drills: {
-        drillAll: false,
-      },
+        drillAll: false
+      }
     },
     options: {
       grid: {
@@ -194,7 +249,7 @@ const PurpicsPivot = () => {
         showGrandTotals: "on",
         showHierarchies: true,
         showHierarchyCaptions: true,
-        showReportFiltersArea: true,
+        showReportFiltersArea: true
       },
       configuratorActive: false,
       configuratorButton: false,
@@ -207,7 +262,7 @@ const PurpicsPivot = () => {
       dateTimePattern: "dd/MM/yyyy HH:mm:ss",
       saveAllFormats: false,
       showDefaultSlice: true,
-      defaultHierarchySortName: "asc",
+      defaultHierarchySortName: "asc"
     },
     formats: [
       {
@@ -220,9 +275,9 @@ const PurpicsPivot = () => {
         currencySymbolAlign: "left",
         nullValue: " ",
         infinityValue: "Infinity",
-        divideByZeroValue: "Infinity",
-      },
-    ],
+        divideByZeroValue: "Infinity"
+      }
+    ]
   };
 
   const handleChangeData = () => {
@@ -267,13 +322,26 @@ const PurpicsPivot = () => {
       {
         uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
         sort: "asc",
+        aggregation: "sum"
       },
+      {
+        uniqueName:
+          "Q20 Would you be interested in ordering from a food locker like this?",
+        sort: "asc",
+        aggregation: "sum"
+      }
+    ]);
+    setRows([
+      {
+        uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
+        sort: "asc"
+      }
     ]);
     setColumns([
       {
         uniqueName:
           "Q20 Would you be interested in ordering from a food locker like this?",
-        sort: "asc",
+        sort: "asc"
       },
       {
         uniqueName: "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?", sort: "asc",
