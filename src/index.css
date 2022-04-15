@@ -110,10 +110,7 @@ body {
 #highchartsContainer{
   width: 100%;
 }
-.pivotTable{
-  width: 700px !important;
-  display: flex;
-}
+
 #wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{
   min-width: 50%;
 }
@@ -167,4 +164,15 @@ body {
 }
 #wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{
   min-width: 50%;
+}
+
+#wdr-pivot-view .wdr-fields-view-wrap.wdr-fields-opened {  
+  top: auto;
+  right: auto;
+  bottom: 60px !important;
+  position: absolute !important;
+  width: 100% !important;
+}
+#wdr-pivot-view div.wdr-ui-modal-overlay{
+  display: none !important;
 }

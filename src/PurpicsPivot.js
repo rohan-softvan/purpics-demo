@@ -8,6 +8,16 @@ import DragDropComponent from "./DragDropComponent";
 
 let count = 0;
 
+function customizeToolbar(toolbar) {
+  var tabs = toolbar.getTabs(); // get all tabs from the toolbar
+  console.log('toolba==>',toolbar)
+  toolbar.getTabs = function() {
+      delete tabs[0]; // delete the first tab
+      return tabs;
+  }
+}
+
+
 const PurpicsPivot = () => {
   const [data, setData] = useState(DataJson);
   const [config, setConfig] = useState({ type: "column", title: 'My Graph Title', height: 400, reflow: true })
@@ -60,7 +70,12 @@ const PurpicsPivot = () => {
   };
 
   const reportComplete = () => {
-    console.log(">>>>>", myRef.webdatarocks.getReport());
+    // document.getElementsByClassName('wdr-ui-element wdr-ui wdr-fields-view-wrap')[0].classList.add("wdr-fields-opened")
+    // document.getElementsByClassName('wdr-ui-element wdr-ui wdr-fields-view-wrap')[0].style.display='block'
+    // let popper = document.getElementById("wdr-fields-view");
+    // if(popper) document.getElementById("wdr-fields-view").style.display='block'
+    // console.log(">>>>>");
+    // myRef.webdatarocks.openFieldsList();
   };
 
 
@@ -259,7 +274,7 @@ const PurpicsPivot = () => {
         showHierarchyCaptions: true,
         showReportFiltersArea: true
       },
-      configuratorActive: false,
+      configuratorActive: true,
       configuratorButton: false,
       showAggregations: true,
       showCalculatedValuesButton: true,
@@ -403,8 +418,7 @@ const PurpicsPivot = () => {
     }, 50);
   }, [rows, columns, measures]);
 
-
-  useEffect(() => {
+  useEffect(() => { 
 
   }, [])
 
@@ -413,16 +427,19 @@ const PurpicsPivot = () => {
     display && <div>
       <div >
         <div className="pivotTable">
-          <div style={{ width: '500px !important', minWidth: '700px' }}>
+          <div>
+          {/* <div style={{ width: '500px !important', minWidth: '700px' }}> */}
             <WebDataRocksReact.Pivot
               ref={(elem) => {
                 myRef = elem;
               }}
+              beforetoolbarcreated={customizeToolbar}
               width={"100%"}
               height={"100%"}
               toolbar={true}
               report={report}
               reportcomplete={() => {
+                console.log('===>',myRef.webdatarocks);
                 reportComplete();
                 createChart();
                 calculateDynamicWidth();
