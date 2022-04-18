@@ -159,7 +159,7 @@ const PurpicsPivot = () => {
           enabled: false
         };
         data.tooltip = {
-          enabled: false
+          enabled: true
         };
         data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${
           data.xAxis.title.text
