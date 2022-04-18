@@ -3,25 +3,31 @@ import Highcharts from "highcharts";
 import * as WebDataRocksReact from "react-webdatarocks";
 import "webdatarocks/webdatarocks.highcharts";
 import { DataJson } from "./DataJson";
-import { DataJson2 } from "./DataJson2";
 import DragDropComponent from "./DragDropComponent";
 
 let count = 0;
 
 function customizeToolbar(toolbar) {
   var tabs = toolbar.getTabs(); // get all tabs from the toolbar
-  console.log('toolba==>',toolbar)
+  console.log("toolbar==>", toolbar);
   toolbar.getTabs = function() {
-      delete tabs[0]; // delete the first tab
-      return tabs;
-  }
+    delete tabs[0]; // delete the first tab
+    return tabs;
+  };
 }
-
 
 const PurpicsPivot = () => {
   const [data, setData] = useState(DataJson);
-  const [config, setConfig] = useState({ type: "column", title: 'My Graph Title', height: 400, reflow: true })
-  const [metaData, setMetaData] = useState({ totalRows: null, totalColumns: null })
+  const [config, setConfig] = useState({
+    type: "column",
+    title: "My Graph Title",
+    height: 400,
+    reflow: true
+  });
+  const [metaData, setMetaData] = useState({
+    totalRows: null,
+    totalColumns: null
+  });
   const [newTitle, setNewTitle] = useState("");
   const [display, setDisplay] = useState(true);
   const [selectedItems, setSelectedItems] = useState({ rows: [], columns: [] });
@@ -46,8 +52,8 @@ const PurpicsPivot = () => {
     {
       uniqueName:
         "Q20 Would you be interested in ordering from a food locker like this?",
-      aggregation: "sum",
-    },
+      aggregation: "sum"
+    }
     // {
     //   uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
     //   aggregation: "sum",
@@ -86,15 +92,22 @@ const PurpicsPivot = () => {
     console.log("handleSubTitleClick invoked 😄");
   };
 
+  const handleAxisTitleClick = (event, axisType) => {
+    console.log("handleAxisTitleClick invoked 😄", axisType);
+  };
+
+  const handleDataLabelClick = event => {
+    console.log("handleDataLabelClick invoked 😄");
+  };
 
   const createChart = () => {
     myRef.webdatarocks.highcharts.getData(
       {
-        type: config.type,
+        type: config.type
       },
 
-      function (data) {
-        console.log("data", data);
+      function(data) {
+        console.log("graph config >>  data:: ", data);
         data.chart.height = config.height;
         data.chart.reflow = config.reflow;
         data.chart.events = {
@@ -106,42 +119,88 @@ const PurpicsPivot = () => {
             document
               .getElementById("custom-subtitle")
               .addEventListener("click", handleSubTitleClick);
+            document
+              .getElementById("custom-x-axis-title")
+              .addEventListener("click", e => handleAxisTitleClick(e, "x"));
+            document
+              .getElementById("custom-y-axis-title")
+              .addEventListener("click", e => handleAxisTitleClick(e, "y"));
+          },
+          click: function() {
+            console.log("chart clickedd");
           }
         };
         // data.chart.height = config.height
-        data.chart.backgroundColor = '#ccc'
-        data.chart.borderColor = '#EBBA95';
+        data.chart.backgroundColor = "#ccc";
+        data.chart.borderColor = "#EBBA95";
         data.chart.borderRadius = 20;
-        data.chart.borderWidth = 2
-        data.chart.reflow = config.reflow
+        data.chart.borderWidth = 2;
+        data.chart.reflow = config.reflow;
         data.title = {
           text: `<p style="color: red;cursor:pointer;" id="custom-title"> LOL </p>`,
           style: {
             color: "#000",
             fontWeight: "bold",
-            fontFamily: "Roboto",
-          },
+            fontFamily: "Roboto"
+          }
         };
         data.subtitle = {
           text: `<p style="color: blue;cursor:pointer;" id="custom-subtitle"> LOL-subtitle </p>`,
           style: {
             color: "#000",
-            fontWeight: "normal",
+            fontWeight: "normal"
             // fontFamily: 'Roboto',
             // fontFamily: 'Rubik',
             // fontFamily: 'Roboto slab',
             // fontFamily: 'Script MT',
-          },
+          }
         };
         data.credits = {
           enabled: false
         };
-        data.credits = {
+        data.tooltip = {
           enabled: false
+        };
+        data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${
+          data.xAxis.title.text
+        } </p>`;
+        data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${
+          data.yAxis[0].title.text
+        } </p>`;
+
+        let seriesData = data.series;
+        seriesData.map(
+          e =>
+            (e.events = {
+              legendItemClick: function() {
+                console.log("legendItemClick::: ", this);
+              }
+            })
+        );
+        data.series = seriesData;
+        data.plotOptions = {
+          // [config.type]: {
+          //   dataLabels: {
+          //     enabled: true
+          //   }
+          // },
+          series: {
+            cursor: "pointer",
+            point: {
+              events: {
+                click: function() {
+                  console.log("seriesClick::: ", this);
+                }
+              }
+            },
+            dataLabels: {
+              enabled: true
+            }
+          }
         };
         Highcharts.chart("highchartsContainer", data);
       },
-      function (data) {
+      function(data) {
         Highcharts.chart("highchartsContainer", data);
         // Highcharts.reflow();
       }
@@ -360,14 +419,13 @@ const PurpicsPivot = () => {
     //   },
     // ]);
 
-
     setData(DataJson);
     setMeasures([
-
       {
-        uniqueName: "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
+        uniqueName:
+          "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
         sort: "asc",
-        aggregation: 'sum',
+        aggregation: "sum"
       }
     ]);
     setRows([
@@ -396,7 +454,9 @@ const PurpicsPivot = () => {
         sort: "asc"
       },
       {
-        uniqueName: "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?", sort: "asc",
+        uniqueName:
+          "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
+        sort: "asc"
       }
     ]);
   };
@@ -404,146 +464,241 @@ const PurpicsPivot = () => {
   const calculateDynamicHeight = () => {
     let finalHeight = (metaData.totalRows + 1) * 30 + 2 + 70 + "px";
     let wdrGridView = document.getElementById("wdr-grid-view");
-    if (wdrGridView) document.getElementById("wdr-grid-view").style.height = finalHeight
+    if (wdrGridView)
+      document.getElementById("wdr-grid-view").style.height = finalHeight;
     let wdrPivotView = document.getElementById("wdr-pivot-view");
-    if (wdrPivotView) document.getElementById("wdr-pivot-view").style.height = finalHeight
-    wdrPivotView.parentElement.style.height = finalHeight
-  }
+    if (wdrPivotView)
+      document.getElementById("wdr-pivot-view").style.height = finalHeight;
+    wdrPivotView.parentElement.style.height = finalHeight;
+  };
 
   const calculateDynamicWidth = () => {
-    let finalWidth = (metaData.totalColumns + 1) * 113.2 + metaData.totalColumns + 3.5;
-    const pivotTable = document.querySelector(".wdr-ui-element")
+    let finalWidth =
+      (metaData.totalColumns + 1) * 113.2 + metaData.totalColumns + 3.5;
+    const pivotTable = document.querySelector(".wdr-ui-element");
     pivotTable.style.width = finalWidth + "px";
-    calculateDynamicHeight()
-  }
+    calculateDynamicHeight();
+  };
 
-  const handleChartChange = (type) => {
-    console.log("type: ", type)
-    config.type = type
-    setConfig({ ...config })
-    createChart()
-  }
+  const handleChartChange = type => {
+    console.log("type: ", type);
+    config.type = type;
+    setConfig({ ...config });
+    createChart();
+  };
 
-  const handleNewTtileChange = (e) => {
+  const handleNewTtileChange = e => {
     setNewTitle(e.target.value);
-  }
+  };
 
   const handleTitleSave = () => {
     config.title = newTitle;
-    setConfig({ ...config })
-    createChart()
-  }
+    setConfig({ ...config });
+    createChart();
+  };
   const handleResize = () => {
-    console.log("Checked Resieze Event")
+    console.log("Checked Resieze Event");
     // this.chart.reflow();
-    document.getElementById('#highchartsContainer').chart.reflow()
-  }
-  useEffect(() => {
-    console.log("in use effect");
-    setDisplay(false);
-    setTimeout(() => {
-      setMetaData({ totalRows: null, totalColumns: null })
-      setDisplay(true);
-    }, 50);
-  }, [rows, columns, measures]);
+    document.getElementById("#highchartsContainer").chart.reflow();
+  };
+  useEffect(
+    () => {
+      console.log("in use effect");
+      setDisplay(false);
+      setTimeout(() => {
+        setMetaData({ totalRows: null, totalColumns: null });
+        setDisplay(true);
+      }, 50);
+    },
+    [rows, columns, measures]
+  );
 
-  useEffect(() => { 
-
-  }, [])
+  useEffect(() => {}, []);
 
   return (
     // style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}
-    display && <div>
-      <div >
-        <div className="pivotTable">
-          <div>
-          {/* <div style={{ width: '500px !important', minWidth: '700px' }}> */}
-            <WebDataRocksReact.Pivot
-              ref={(elem) => {
-                myRef = elem;
-              }}
-              beforetoolbarcreated={customizeToolbar}
-              width={"100%"}
-              height={"100%"}
-              toolbar={true}
-              report={report}
-              reportcomplete={() => {
-                console.log('===>',myRef.webdatarocks);
-                reportComplete();
-                createChart();
-                calculateDynamicWidth();
-              }}
-              customizeCell={(cellBuilder, cellData) => {
-                if (cellData.columnIndex > metaData.totalColumns) metaData.totalColumns = cellData.columnIndex;
-                if (cellData.rowIndex > metaData.totalRows) metaData.totalRows = cellData.rowIndex;
-              }}
-              reportchange={calculateDynamicWidth}
-              aftergriddraw={() => {
-                const grandTotalCell = document.getElementsByClassName(
-                  "wdr-header wdr-header-c wdr-grand-total"
-                )[0];
-                if (grandTotalCell) grandTotalCell.innerHTML = "Total";
-                calculateDynamicWidth()
-                calculateDynamicHeight()
-                // handleResize()
-              }}
-            />
+    display && (
+      <div>
+        <div>
+          <div className="pivotTable">
+            <div>
+              {/* <div style={{ width: '500px !important', minWidth: '700px' }}> */}
+              <WebDataRocksReact.Pivot
+                ref={elem => {
+                  myRef = elem;
+                }}
+                beforetoolbarcreated={customizeToolbar}
+                width={"100%"}
+                height={"100%"}
+                toolbar={true}
+                report={report}
+                reportcomplete={() => {
+                  console.log("===>", myRef.webdatarocks);
+                  reportComplete();
+                  createChart();
+                  calculateDynamicWidth();
+                }}
+                customizeCell={(cellBuilder, cellData) => {
+                  if (cellData.columnIndex > metaData.totalColumns)
+                    metaData.totalColumns = cellData.columnIndex;
+                  if (cellData.rowIndex > metaData.totalRows)
+                    metaData.totalRows = cellData.rowIndex;
+                }}
+                reportchange={calculateDynamicWidth}
+                aftergriddraw={() => {
+                  const grandTotalCell = document.getElementsByClassName(
+                    "wdr-header wdr-header-c wdr-grand-total"
+                  )[0];
+                  if (grandTotalCell) grandTotalCell.innerHTML = "Total";
+                  calculateDynamicWidth();
+                  calculateDynamicHeight();
+                  // handleResize()
+                }}
+              />
+            </div>
           </div>
-        </div>
 
-          <div className="charResize"onMouseUpCapture={() => {
-          console.log('reflow==>');
-          Highcharts.charts.forEach(function (chart, index) {
-            if (chart) {
-              if (chart.renderTo.id === 'highchartsContainer') {
-                // chart.exporting.filename='custom-file-name';
-                // chosenChart = chart;
-                chart.reflow();
-              }
-            }
-          });
-        }}>
+          <div
+            className="charResize"
+            onMouseUpCapture={() => {
+              Highcharts.charts.forEach(function(chart, index) {
+                if (chart) {
+                  if (chart.renderTo.id === "highchartsContainer") {
+                    chart.reflow();
+                  }
+                }
+              });
+            }}
+          >
             <div id="highchartsContainer" />
           </div>
-
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <button onClick={() => handleChartChange('bar')} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Bar Chart</button>
-        <button onClick={() => handleChartChange('pie')} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Pie Chart</button>
-        <button onClick={() => handleChartChange('area')} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Area Chart</button>
-        <button onClick={() => handleChartChange('line')} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Line Chart</button>
-        <br />
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '5px 15px 0px 0px' }}>
-          Title: <input value={newTitle} onChange={handleNewTtileChange} style={{ height: '30px', border: '1px solid #000', borderRadius: '5px' }} /> <button onClick={
-            handleTitleSave} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '0px 5px 0px', borderRadius: '5px', padding: '10px', cursor: 'pointer' }}>Submit</button>
         </div>
-        <button onClick={handleChangeData} style={{ background: '#12988A', color: '#fff', border: '0px', margin: '5px 5px 0px', borderRadius: '5px', cursor: 'pointer' }}>Append New Data</button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={() => handleChartChange("bar")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Bar Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("pie")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Pie Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("area")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Area Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("line")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Line Chart
+          </button>
+          <br />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: "5px 15px 0px 0px"
+            }}
+          >
+            Title:{" "}
+            <input
+              value={newTitle}
+              onChange={handleNewTtileChange}
+              style={{
+                height: "30px",
+                border: "1px solid #000",
+                borderRadius: "5px"
+              }}
+            />{" "}
+            <button
+              onClick={handleTitleSave}
+              style={{
+                background: "#12988A",
+                color: "#fff",
+                border: "0px",
+                margin: "0px 5px 0px",
+                borderRadius: "5px",
+                padding: "10px",
+                cursor: "pointer"
+              }}
+            >
+              Submit
+            </button>
+          </div>
+          <button
+            onClick={handleChangeData}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Append New Data
+          </button>
+        </div>
+        <hr />
+        <div>
+          <input
+            type="checkbox"
+            onChange={handleOnChange}
+            value={"Q1: Some Question Q1"}
+          />{" "}
+          Q1: Some Question Q1 <br />
+          <input
+            type="checkbox"
+            onChange={handleOnChange}
+            value={"Q2: Some Question Q2"}
+          />{" "}
+          Q2: Some Question Q2 <br />
+          <input
+            type="checkbox"
+            onChange={handleOnChange}
+            value={"Q3: Some Question Q3"}
+          />{" "}
+          Q3: Some Question Q3 <br />
+          <br />
+          <DragDropComponent selectedItems={selectedItems} />
+        </div>
       </div>
-      <hr />
-      <div>
-        <input
-          type="checkbox"
-          onChange={handleOnChange}
-          value={"Q1: Some Question Q1"}
-        />{" "}
-        Q1: Some Question Q1 <br />
-        <input
-          type="checkbox"
-          onChange={handleOnChange}
-          value={"Q2: Some Question Q2"}
-        />{" "}
-        Q2: Some Question Q2 <br />
-        <input
-          type="checkbox"
-          onChange={handleOnChange}
-          value={"Q3: Some Question Q3"}
-        />{" "}
-        Q3: Some Question Q3 <br />
-        <br />
-        <DragDropComponent selectedItems={selectedItems} />
-      </div>
-
-    </div>
+    )
   );
 };
 
