@@ -3,7 +3,7 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
- #wdr-pivot-view .wdr-grid-layout div.wdr-row{
+#wdr-pivot-view .wdr-grid-layout div.wdr-row {
   display: flex;
 }
 /*#wdr-pivot-view .wdr-grid-layout div.wdr-row > div{
@@ -19,7 +19,7 @@ body {
   width: 200px !important;
 }  */
 
-.wdr-row .wdr-grand-total{
+.wdr-row .wdr-grand-total {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
@@ -33,8 +33,7 @@ body {
   height: 60px !important;
 } */
 
-
-#wdr-pivot-view .wdr-grid-layout div.wdr-row{
+#wdr-pivot-view .wdr-grid-layout div.wdr-row {
   display: flex;
 }
 /*#wdr-pivot-view .wdr-grid-layout div.wdr-row > div{
@@ -50,7 +49,7 @@ body {
   width: 200px !important;
 }  */
 
-.wdr-row .wdr-grand-total{
+.wdr-row .wdr-grand-total {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
@@ -63,8 +62,6 @@ body {
 /* .wdr-grid-row {
   height: 60px !important;
 } */
-
-
 
 .chartResize .resizer-right {
   width: 5px;
@@ -99,19 +96,19 @@ body {
 
 /*NOSELECT*/
 
-.chartResize{
-  border:2px solid #000;
+.chartResize {
+  border: 2px solid #000;
   background-color: #ccc;
 }
-.charResize{
-  overflow:auto;
+.charResize {
+  overflow: auto;
   resize: both;
 }
-#highchartsContainer{
+#highchartsContainer {
   width: 100%;
 }
 
-#wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{
+#wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header {
   min-width: 50%;
 }
 .chartResize .resizer-right {
@@ -147,32 +144,39 @@ body {
 
 /*NOSELECT*/
 
-.chartResize{
-  border:2px solid #000;
+.chartResize {
+  border: 2px solid #000;
   background-color: #ccc;
 }
-.charResize{
-  overflow:auto;
+.charResize {
+  overflow: auto;
   resize: both;
 }
-#highchartsContainer{
+#highchartsContainer {
   width: 100%;
 }
-.pivotTable{
+.pivotTable {
   /* width: 700px !important; */
   display: flex;
 }
-#wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header{
+#wdr-pivot-view .wdr-grid-layout div.wdr-row .wdr-filter-header {
   min-width: 50%;
 }
 
-#wdr-pivot-view .wdr-fields-view-wrap.wdr-fields-opened {  
+#wdr-pivot-view .wdr-fields-view-wrap.wdr-fields-opened {
   top: auto;
   right: auto;
-  bottom: 60px !important;
+  bottom: -50px !important;
   position: absolute !important;
   width: 100% !important;
 }
-#wdr-pivot-view div.wdr-ui-modal-overlay{
+#wdr-pivot-view div.wdr-ui-modal-overlay {
   display: none !important;
 }
+
+/*#wdr-pivot-view .wdr-fields-view-wrap {*/
+/*  display: block !important;*/
+/*}*/
+/*#wdr-pivot-view .wdr-fields-view-wrap .wdr-fields-opened {*/
+/*  display: block !important;*/
+/*}*/
