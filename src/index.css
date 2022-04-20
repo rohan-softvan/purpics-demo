@@ -180,3 +180,20 @@ body {
 /*#wdr-pivot-view .wdr-fields-view-wrap .wdr-fields-opened {*/
 /*  display: block !important;*/
 /*}*/
+
+/*.wdr-ui-btns-row .wdr-ui-btn.wdr-ui-btn-dark{*/
+/*  opacity: 0.5;*/
+/*  pointer-events: none;*/
+/*}*/
+
+
+.auto-btn{
+  background: #D2D2D2 0% 0% no-repeat padding-box;
+  border-radius: 2px;
+  opacity: 1;
+  height: 45px;
+  border: 1px solid #1c1b1b;
+  cursor: pointer;
+  /*color: #fff;*/
+  font-size: 20px;
+}

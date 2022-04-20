@@ -6,7 +6,7 @@ import { DataJson } from "./DataJson";
 import DragDropComponent from "./DragDropComponent";
 import TabPanel from "./TabPanel";
 import { makeStyles, Tab, Tabs } from "@material-ui/core";
-import ColorPicker from "./ColorPicker";
+import ColorPicker from "./CustomColorPicker";
 import OptionsTab from "./OptionsTab";
 
 let count = 0;
@@ -22,7 +22,11 @@ function customizeToolbar(toolbar) {
 
 const PurpicsPivot = () => {
   const [value, setValue] = useState(0);
-  const [fieldTabFlag, setFieldTabFlag] = useState(false);
+  const [optionsConfig, setOptionsConfig] = useState({
+    grandTotal: "on",
+    subTotals: "on",
+    layout: "compact"
+  });
   const [data, setData] = useState(DataJson);
   const [config, setConfig] = useState({
     type: "column",
@@ -167,12 +171,8 @@ const PurpicsPivot = () => {
         data.tooltip = {
           enabled: true
         };
-        data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${
-          data.xAxis.title.text
-        } </p>`;
-        data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${
-          data.yAxis[0].title.text
-        } </p>`;
+        data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${data.xAxis.title.text} </p>`;
+        data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${data.yAxis[0].title.text} </p>`;
 
         let seriesData = data.series;
         seriesData.map(
@@ -301,17 +301,17 @@ const PurpicsPivot = () => {
     },
     options: {
       grid: {
-        type: "compact",
+        type: optionsConfig.layout,
         title: "",
         showFilter: true,
         showHeaders: false,
-        showTotals: true,
-        showGrandTotals: "on",
+        showTotals: optionsConfig.subTotals,
+        showGrandTotals: optionsConfig.grandTotal,
         showHierarchies: true,
         showHierarchyCaptions: true,
         showReportFiltersArea: true
       },
-      configuratorActive: true,
+      configuratorActive: false,
       configuratorButton: false,
       showAggregations: true,
       showCalculatedValuesButton: true,
@@ -420,13 +420,15 @@ const PurpicsPivot = () => {
       document.getElementById("wdr-pivot-view").style.height = finalHeight;
     wdrPivotView.parentElement.style.height = finalHeight;
   };
+
   const applyButtonStyle = () => {
-    let applyButton = document.getElementsByClassName(
-      "wdr-ui-element wdr-ui wdr-ui-btn wdr-ui-btn-dark"
-    );
-    console.log("applyButton ", applyButton);
-    applyButton[0] && applyButton[0].classList.add("wdr-ui-disabled");
+    // let applyButton = document.getElementsByClassName(
+    //   "wdr-ui-element wdr-ui wdr-ui-btn wdr-ui-btn-dark"
+    // );
+    // console.log("applyButton ", applyButton);
+    // applyButton[0] && applyButton[0].classList.add("wdr-ui-disabled");
   };
+
   const calculateDynamicWidth = () => {
     let finalWidth =
       (metaData.totalColumns + 1) * 113.2 + metaData.totalColumns + 3.5;
@@ -481,38 +483,39 @@ const PurpicsPivot = () => {
     // this.chart.reflow();
     document.getElementById("#highchartsContainer").chart.reflow();
   };
-  useEffect(
-    () => {
-      console.log("in use effect");
-      setDisplay(false);
-      setTimeout(() => {
-        setMetaData({ totalRows: null, totalColumns: null });
-        setDisplay(true);
-      }, 50);
-    },
-    [rows, columns, measures]
-  );
 
-  useEffect(
-    () => {
-      if (myRef && myRef.webdatarocks) {
-        console.log("value changed:-> ", value);
-        myRef &&
-          myRef.webdatarocks.on("fieldslistclose", function() {
-            // alert("Field list is opened!");
-            console.log(">>> ", myRef);
-            myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
-          });
-        if (value === 0) {
-          myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
-        } else {
-          myRef && myRef.webdatarocks && myRef.webdatarocks.closeFieldsList();
-          // myRef && myRef.webdatarocks && myRef.webdatarocks.showOptionsDialog();
-        }
+  const handleOptionsConfigChange = (type, value) => {
+    console.log("type, value: ", type, value);
+    optionsConfig[type] = value;
+    setOptionsConfig({ ...optionsConfig });
+    // myRef && myRef.webdatarocks && myRef.webdatarocks.refresh();
+  };
+
+  useEffect(() => {
+    console.log("in use effect");
+    setDisplay(false);
+    setTimeout(() => {
+      setMetaData({ totalRows: null, totalColumns: null });
+      setDisplay(true);
+    }, 50);
+  }, [rows, columns, measures, optionsConfig]);
+
+  useEffect(() => {
+    if (myRef && myRef.webdatarocks) {
+      console.log("value changed:-> ", value);
+      // myRef &&
+      //   myRef.webdatarocks.on("fieldslistclose", function() {
+      //     // alert("Field list is opened!");
+      //     console.log(">>> ", myRef);
+      //     myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
+      //   });
+      if (value === 0) {
+        myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
+      } else {
+        myRef && myRef.webdatarocks && myRef.webdatarocks.closeFieldsList();
       }
-    },
-    [value]
-  );
+    }
+  }, [value]);
 
   return (
     // style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}
@@ -585,11 +588,12 @@ const PurpicsPivot = () => {
             <Tab label="Options" {...a11yProps(1)} />
           </Tabs>
 
-          <TabPanel value={value} index={0}>
-            {renderFieldsTab()}
-          </TabPanel>
+          <TabPanel value={value} index={0}></TabPanel>
           <TabPanel value={value} index={1}>
-            <OptionsTab />
+            <OptionsTab
+              handleChange={handleOptionsConfigChange}
+              optionsConfig={optionsConfig}
+            />
           </TabPanel>
         </div>
 
