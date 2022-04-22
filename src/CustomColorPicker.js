@@ -65,9 +65,9 @@ function CustomColorPicker() {
           disableAlpha
           presetColors={["#ff0000", "#ffffff", "#ccffcc"]}
         />
-         <div
+        <div
           style={{ width: "100px", height: "100px", backgroundColor: hexColor }}
-        ></div>
+        />
         {/*<MaterialPicker color={hexColor} onChange={setColor} />*/}
         {/*<CirclePicker color={hexColor} onChange={setColor} />*/}
         {/*<CompactPicker color={hexColor} onChange={setColor} />*/}

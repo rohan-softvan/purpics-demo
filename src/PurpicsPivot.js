@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Highcharts from "highcharts";
+import highcharts3d from "highcharts/highcharts-3d";
 import * as WebDataRocksReact from "react-webdatarocks";
 import "webdatarocks/webdatarocks.highcharts";
 import { DataJson } from "./DataJson";
@@ -8,6 +9,8 @@ import TabPanel from "./TabPanel";
 import { makeStyles, Tab, Tabs } from "@material-ui/core";
 import ColorPicker from "./CustomColorPicker";
 import OptionsTab from "./OptionsTab";
+
+highcharts3d(Highcharts);
 
 let count = 0;
 
@@ -111,9 +114,39 @@ const PurpicsPivot = () => {
   };
 
   const createChart = () => {
+    let chartType;
+    switch (config.type) {
+      case "multicolor-bar":
+        chartType = "bar";
+        break;
+
+      case "stacked-bar":
+        chartType = "bar";
+        break;
+
+      case "stacked-percent":
+        chartType = "bar";
+        break;
+
+      case "donut":
+        chartType = "pie";
+        break;
+
+      case "3d-pie":
+        chartType = "pie";
+        break;
+
+      case "3d-donut":
+        chartType = "pie";
+        break;
+
+      default:
+        chartType = config.type;
+    }
+    console.log("chartType: ", chartType);
     myRef.webdatarocks.highcharts.getData(
       {
-        type: config.type
+        type: chartType
       },
 
       function(data) {
@@ -129,23 +162,41 @@ const PurpicsPivot = () => {
             document
               .getElementById("custom-subtitle")
               .addEventListener("click", handleSubTitleClick);
-            document
-              .getElementById("custom-x-axis-title")
-              .addEventListener("click", e => handleAxisTitleClick(e, "x"));
-            document
-              .getElementById("custom-y-axis-title")
-              .addEventListener("click", e => handleAxisTitleClick(e, "y"));
+            console.log("config.type: ", config.type);
+            if (
+              config.type !== "pie" &&
+              config.type !== "donut" &&
+              config.type !== "3d-pie" &&
+              config.type !== "3d-donut"
+            ) {
+              console.log("config.type in if");
+              document
+                .getElementById("custom-x-axis-title")
+                .addEventListener("click", e => handleAxisTitleClick(e, "x"));
+              document
+                .getElementById("custom-y-axis-title")
+                .addEventListener("click", e => handleAxisTitleClick(e, "y"));
+            }
           },
           click: function() {
             console.log("chart clickedd");
           }
         };
         // data.chart.height = config.height
-        data.chart.backgroundColor = "#ccc";
+        data.chart.backgroundColor = "#fff";
         data.chart.borderColor = "#EBBA95";
         data.chart.borderRadius = 20;
         data.chart.borderWidth = 2;
         data.chart.reflow = config.reflow;
+        if (config.type === "3d-pie" || config.type === "3d-donut") {
+          data.chart.options3d = {
+            enabled: true,
+            alpha: 45,
+            beta: 0
+          };
+          data.chart.polar = false;
+        }
+        console.log("data.chart: ", data.chart);
         data.title = {
           text: `<p style="color: red;cursor:pointer;" id="custom-title"> LOL </p>`,
           style: {
@@ -184,14 +235,41 @@ const PurpicsPivot = () => {
             })
         );
         data.series = seriesData;
-        data.plotOptions = {
-          // [config.type]: {
-          //   dataLabels: {
-          //     enabled: true
-          //   }
-          // },
+        let plotOptions = {
+          pie:
+            config.type === "donut"
+              ? {
+                  allowPointSelect: true,
+                  cursor: true,
+                  innerSize: "60%",
+                  dataLabels: {
+                    enabled: true
+                  }
+                }
+              : config.type === "3d-donut"
+              ? {
+                  allowPointSelect: true,
+                  depth: 35,
+                  cursor: "pointer",
+                  innerSize: "60%"
+                }
+              : config.type === "3d-pie"
+              ? {
+                  allowPointSelect: true,
+                  depth: 35,
+                  cursor: "pointer"
+                }
+              : {},
           series: {
             cursor: "pointer",
+            stacking:
+              config.type === "stacked-percent"
+                ? "percent"
+                : config.type === "stacked-bar"
+                ? "normal"
+                : false,
+            //#TODO refactor this for multi-color-bar
+            // colorByPoint: config.type === "multicolor-bar" ? true: false,
             point: {
               events: {
                 click: function() {
@@ -204,6 +282,13 @@ const PurpicsPivot = () => {
             }
           }
         };
+
+        if (config.type === "multicolor-bar") {
+          plotOptions.series.colorByPoint = true;
+        }
+
+        data.plotOptions = plotOptions;
+        console.log("graph final data: ", data);
         Highcharts.chart("highchartsContainer", data);
       },
       function(data) {
@@ -439,7 +524,6 @@ const PurpicsPivot = () => {
   };
 
   const handleChartChange = type => {
-    console.log("type: ", type);
     config.type = type;
     setConfig({ ...config });
     createChart();
@@ -536,7 +620,7 @@ const PurpicsPivot = () => {
                 report={report}
                 reportcomplete={() => {
                   reportComplete();
-                  // createChart();
+                  createChart();
                   calculateDynamicWidth();
                   value === 0 &&
                     myRef &&
@@ -597,130 +681,185 @@ const PurpicsPivot = () => {
           </TabPanel>
         </div>
 
-        {/*<div style={{ display: "flex", justifyContent: "center" }}>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleChartChange("bar")}*/}
-        {/*    style={{*/}
-        {/*      background: "#12988A",*/}
-        {/*      color: "#fff",*/}
-        {/*      border: "0px",*/}
-        {/*      margin: "5px 5px 0px",*/}
-        {/*      borderRadius: "5px",*/}
-        {/*      cursor: "pointer"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Bar Chart*/}
-        {/*  </button>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleChartChange("pie")}*/}
-        {/*    style={{*/}
-        {/*      background: "#12988A",*/}
-        {/*      color: "#fff",*/}
-        {/*      border: "0px",*/}
-        {/*      margin: "5px 5px 0px",*/}
-        {/*      borderRadius: "5px",*/}
-        {/*      cursor: "pointer"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Pie Chart*/}
-        {/*  </button>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleChartChange("area")}*/}
-        {/*    style={{*/}
-        {/*      background: "#12988A",*/}
-        {/*      color: "#fff",*/}
-        {/*      border: "0px",*/}
-        {/*      margin: "5px 5px 0px",*/}
-        {/*      borderRadius: "5px",*/}
-        {/*      cursor: "pointer"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Area Chart*/}
-        {/*  </button>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleChartChange("line")}*/}
-        {/*    style={{*/}
-        {/*      background: "#12988A",*/}
-        {/*      color: "#fff",*/}
-        {/*      border: "0px",*/}
-        {/*      margin: "5px 5px 0px",*/}
-        {/*      borderRadius: "5px",*/}
-        {/*      cursor: "pointer"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Line Chart*/}
-        {/*  </button>*/}
-        {/*  <br />*/}
-        {/*  <div*/}
-        {/*    style={{*/}
-        {/*      display: "flex",*/}
-        {/*      justifyContent: "center",*/}
-        {/*      alignItems: "center",*/}
-        {/*      margin: "5px 15px 0px 0px"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Title:{" "}*/}
-        {/*    <input*/}
-        {/*      value={newTitle}*/}
-        {/*      onChange={handleNewTtileChange}*/}
-        {/*      style={{*/}
-        {/*        height: "30px",*/}
-        {/*        border: "1px solid #000",*/}
-        {/*        borderRadius: "5px"*/}
-        {/*      }}*/}
-        {/*    />{" "}*/}
-        {/*    <button*/}
-        {/*      onClick={handleTitleSave}*/}
-        {/*      style={{*/}
-        {/*        background: "#12988A",*/}
-        {/*        color: "#fff",*/}
-        {/*        border: "0px",*/}
-        {/*        margin: "0px 5px 0px",*/}
-        {/*        borderRadius: "5px",*/}
-        {/*        padding: "10px",*/}
-        {/*        cursor: "pointer"*/}
-        {/*      }}*/}
-        {/*    >*/}
-        {/*      Submit*/}
-        {/*    </button>*/}
-        {/*  </div>*/}
-        {/*  <button*/}
-        {/*    onClick={handleChangeData}*/}
-        {/*    style={{*/}
-        {/*      background: "#12988A",*/}
-        {/*      color: "#fff",*/}
-        {/*      border: "0px",*/}
-        {/*      margin: "5px 5px 0px",*/}
-        {/*      borderRadius: "5px",*/}
-        {/*      cursor: "pointer"*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    Append New Data*/}
-        {/*  </button>*/}
-        {/*</div>*/}
-        {/*<hr />*/}
-        {/*<div>*/}
-        {/*  <input*/}
-        {/*    type="checkbox"*/}
-        {/*    onChange={handleOnChange}*/}
-        {/*    value={"Q1: Some Question Q1"}*/}
-        {/*  />{" "}*/}
-        {/*  Q1: Some Question Q1 <br />*/}
-        {/*  <input*/}
-        {/*    type="checkbox"*/}
-        {/*    onChange={handleOnChange}*/}
-        {/*    value={"Q2: Some Question Q2"}*/}
-        {/*  />{" "}*/}
-        {/*  Q2: Some Question Q2 <br />*/}
-        {/*  <input*/}
-        {/*    type="checkbox"*/}
-        {/*    onChange={handleOnChange}*/}
-        {/*    value={"Q3: Some Question Q3"}*/}
-        {/*  />{" "}*/}
-        {/*  Q3: Some Question Q3 <br />*/}
-        {/*  <br />*/}
-        {/*  <DragDropComponent selectedItems={selectedItems} />*/}
-        {/*</div>*/}
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={() => handleChartChange("bar")}
+            style={{
+              background: "#ff0000",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Basic bar
+          </button>
+          <button
+            onClick={() => handleChartChange("multicolor-bar")}
+            style={{
+              background: "#ff0000",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Multi-color bar
+          </button>
+          <button
+            onClick={() => handleChartChange("stacked-bar")}
+            style={{
+              background: "#ff0000",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Stacked bar
+          </button>
+          <button
+            onClick={() => handleChartChange("stacked-percent")}
+            style={{
+              background: "#ff0000",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Stacked percent bar
+          </button>
+          <button
+            onClick={() => handleChartChange("pie")}
+            style={{
+              background: "#8414ff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Pie Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("donut")}
+            style={{
+              background: "#8414ff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Donut
+          </button>{" "}
+          <button
+            onClick={() => handleChartChange("3d-pie")}
+            style={{
+              background: "#8414ff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            3D Pie
+          </button>
+          <button
+            onClick={() => handleChartChange("3d-donut")}
+            style={{
+              background: "#8414ff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            3D Donut
+          </button>
+          <button
+            onClick={() => handleChartChange("area")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Area Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("line")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Line Chart
+          </button>
+          <br />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: "5px 15px 0px 0px"
+            }}
+          >
+            Title:{" "}
+            <input
+              value={newTitle}
+              onChange={handleNewTtileChange}
+              style={{
+                height: "30px",
+                border: "1px solid #000",
+                borderRadius: "5px"
+              }}
+            />{" "}
+            <button
+              onClick={handleTitleSave}
+              style={{
+                background: "#12988A",
+                color: "#fff",
+                border: "0px",
+                margin: "0px 5px 0px",
+                borderRadius: "5px",
+                padding: "10px",
+                cursor: "pointer"
+              }}
+            >
+              Submit
+            </button>
+          </div>
+          <button
+            onClick={handleChangeData}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Append New Data
+          </button>
+        </div>
       </div>
     )
   );
