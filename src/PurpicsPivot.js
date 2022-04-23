@@ -4,10 +4,8 @@ import highcharts3d from "highcharts/highcharts-3d";
 import * as WebDataRocksReact from "react-webdatarocks";
 import "webdatarocks/webdatarocks.highcharts";
 import { DataJson } from "./DataJson";
-import DragDropComponent from "./DragDropComponent";
 import TabPanel from "./TabPanel";
 import { makeStyles, Tab, Tabs } from "@material-ui/core";
-import ColorPicker from "./CustomColorPicker";
 import OptionsTab from "./OptionsTab";
 
 highcharts3d(Highcharts);
@@ -48,11 +46,12 @@ const PurpicsPivot = () => {
     {
       uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
       sort: "asc"
+    },
+    {
+      uniqueName:
+        "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
+      sort: "asc"
     }
-    // {
-    //   "uniqueName": "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
-    //   "sort": "asc"
-    // },
   ]);
   const [columns, setColumns] = useState([
     {
@@ -66,11 +65,11 @@ const PurpicsPivot = () => {
       uniqueName:
         "Q20 Would you be interested in ordering from a food locker like this?",
       aggregation: "sum"
-    }
-    // {
-    //   uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
-    //   aggregation: "sum",
-    // },
+    },
+    {
+      uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
+      aggregation: "sum",
+    },
     // {
     //   "uniqueName": "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
     //   "aggregation": "sum"
@@ -113,31 +112,85 @@ const PurpicsPivot = () => {
     console.log("handleDataLabelClick invoked 😄");
   };
 
+  const getPlotOptionsForDonut = () => ({
+    allowPointSelect: true,
+    cursor: true,
+    innerSize: "60%",
+    dataLabels: {
+      enabled: true
+    }
+  });
+
+  const getPlotOptionsFor3dDonut = () => ({
+    allowPointSelect: true,
+    depth: 35,
+    cursor: "pointer",
+    innerSize: "60%"
+  });
+
+  const getPlotOptionsFor3dPie = () => ({
+    allowPointSelect: true,
+    depth: 35,
+    cursor: "pointer"
+  });
+
+  const getPlotOptionsForSemicircleDonut = () => ({
+    allowPointSelect: false,
+    dataLabels: {
+      distance: -30,
+      style: {
+        fontWeight: "bold",
+        color: "white",
+        textShadow: "0px 1px 2px black"
+      }
+    },
+    innerSize: "50%",
+    startAngle: -90,
+    endAngle: 90,
+    center: ["50%", "75%"]
+  });
+
+  const getStackingGraphConfig = graphType => {
+    if (
+      graphType === "stacked-percent-bar" ||
+      graphType === "stacked-percent-column" ||
+      graphType === "stacked-percent-area"
+    )
+      return "percent";
+    else if (
+      graphType === "stacked-bar" ||
+      graphType === "stacked-column" ||
+      graphType === "stacked-area"
+    )
+      return "normal";
+    else return false;
+  };
+
   const createChart = () => {
     let chartType;
     switch (config.type) {
       case "multicolor-bar":
-        chartType = "bar";
-        break;
-
       case "stacked-bar":
-        chartType = "bar";
-        break;
-
-      case "stacked-percent":
+      case "stacked-percent-bar":
         chartType = "bar";
         break;
 
       case "donut":
-        chartType = "pie";
-        break;
-
       case "3d-pie":
+      case "3d-donut":
+      case "semi-circle-donut":
         chartType = "pie";
         break;
 
-      case "3d-donut":
-        chartType = "pie";
+      case "multicolor-column":
+      case "stacked-column":
+      case "stacked-percent-column":
+        chartType = "column";
+        break;
+
+      case "stacked-area":
+      case "stacked-percent-area":
+        chartType = "area";
         break;
 
       default:
@@ -167,7 +220,10 @@ const PurpicsPivot = () => {
               config.type !== "pie" &&
               config.type !== "donut" &&
               config.type !== "3d-pie" &&
-              config.type !== "3d-donut"
+              config.type !== "3d-donut" &&
+              config.type !== "semi-circle-donut" &&
+              document.getElementById("custom-x-axis-title") &&
+              document.getElementById("custom-y-axis-title")
             ) {
               console.log("config.type in if");
               document
@@ -223,7 +279,8 @@ const PurpicsPivot = () => {
           enabled: true
         };
         data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${data.xAxis.title.text} </p>`;
-        data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${data.yAxis[0].title.text} </p>`;
+        if (data.yAxis && data.yAxis[0] && data.yAxis[0].title.text)
+          data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${data.yAxis[0].title.text} </p>`;
 
         let seriesData = data.series;
         seriesData.map(
@@ -235,41 +292,23 @@ const PurpicsPivot = () => {
             })
         );
         data.series = seriesData;
+
         let plotOptions = {
           pie:
             config.type === "donut"
-              ? {
-                  allowPointSelect: true,
-                  cursor: true,
-                  innerSize: "60%",
-                  dataLabels: {
-                    enabled: true
-                  }
-                }
+              ? getPlotOptionsForDonut()
               : config.type === "3d-donut"
-              ? {
-                  allowPointSelect: true,
-                  depth: 35,
-                  cursor: "pointer",
-                  innerSize: "60%"
-                }
+              ? getPlotOptionsFor3dDonut()
               : config.type === "3d-pie"
-              ? {
-                  allowPointSelect: true,
-                  depth: 35,
-                  cursor: "pointer"
-                }
+              ? getPlotOptionsFor3dPie()
+              : config.type === "semi-circle-donut"
+              ? getPlotOptionsForSemicircleDonut()
               : {},
+
           series: {
             cursor: "pointer",
-            stacking:
-              config.type === "stacked-percent"
-                ? "percent"
-                : config.type === "stacked-bar"
-                ? "normal"
-                : false,
-            //#TODO refactor this for multi-color-bar
-            // colorByPoint: config.type === "multicolor-bar" ? true: false,
+            stacking: getStackingGraphConfig(config.type),
+
             point: {
               events: {
                 click: function() {
@@ -283,7 +322,10 @@ const PurpicsPivot = () => {
           }
         };
 
-        if (config.type === "multicolor-bar") {
+        if (
+          config.type === "multicolor-bar" ||
+          config.type === "multicolor-column"
+        ) {
           plotOptions.series.colorByPoint = true;
         }
 
@@ -722,7 +764,7 @@ const PurpicsPivot = () => {
             Stacked bar
           </button>
           <button
-            onClick={() => handleChartChange("stacked-percent")}
+            onClick={() => handleChartChange("stacked-percent-bar")}
             style={{
               background: "#ff0000",
               color: "#fff",
@@ -787,6 +829,97 @@ const PurpicsPivot = () => {
             3D Donut
           </button>
           <button
+            onClick={() => handleChartChange("semi-circle-donut")}
+            style={{
+              background: "#8414ff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Semi-circle donut
+          </button>
+          <button
+            onClick={() => handleChartChange("column")}
+            style={{
+              background: "#8a6e00",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Basic column
+          </button>
+          <button
+            onClick={() => handleChartChange("multicolor-column")}
+            style={{
+              background: "#8a6e00",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Multi-color column
+          </button>
+          <button
+            onClick={() => handleChartChange("stacked-column")}
+            style={{
+              background: "#8a6e00",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Stacked column
+          </button>
+          <button
+            onClick={() => handleChartChange("stacked-percent-column")}
+            style={{
+              background: "#8a6e00",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Stacked percent column
+          </button>
+          <button
+            onClick={() => handleChartChange("line")}
+            style={{
+              background: "#030e50",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Line Chart
+          </button>
+          <button
+            onClick={() => handleChartChange("scatter")}
+            style={{
+              background: "#030e50",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Scatter chart
+          </button>
+          <button
             onClick={() => handleChartChange("area")}
             style={{
               background: "#12988A",
@@ -797,10 +930,10 @@ const PurpicsPivot = () => {
               cursor: "pointer"
             }}
           >
-            Area Chart
+            Basic Area
           </button>
           <button
-            onClick={() => handleChartChange("line")}
+            onClick={() => handleChartChange("stacked-area")}
             style={{
               background: "#12988A",
               color: "#fff",
@@ -810,7 +943,20 @@ const PurpicsPivot = () => {
               cursor: "pointer"
             }}
           >
-            Line Chart
+            Stacked Area
+          </button>
+          <button
+            onClick={() => handleChartChange("stacked-percent-area")}
+            style={{
+              background: "#12988A",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            Stacked Percentage Area
           </button>
           <br />
           <div

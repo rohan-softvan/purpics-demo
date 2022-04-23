@@ -11114,7 +11114,7 @@ export class ExamplePivot extends React.Component {
 
   createChart() {
     this.myRef.webdatarocks.highcharts.getData({
-      type: "line"
+      type: "scatter"
     }, function (data) {
       console.log("data", data);
       Highcharts.chart("highchartsContainer", data);
