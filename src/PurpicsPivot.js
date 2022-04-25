@@ -46,12 +46,12 @@ const PurpicsPivot = () => {
     {
       uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
       sort: "asc"
-    },
-    {
-      uniqueName:
-        "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
-      sort: "asc"
     }
+    // {
+    //   uniqueName:
+    //     "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
+    //   sort: "asc"
+    // }
   ]);
   const [columns, setColumns] = useState([
     {
@@ -64,12 +64,13 @@ const PurpicsPivot = () => {
     {
       uniqueName:
         "Q20 Would you be interested in ordering from a food locker like this?",
-      aggregation: "sum"
-    },
-    {
-      uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
-      aggregation: "sum",
-    },
+      aggregation: "count"
+    }
+    // {
+    //
+    //   uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
+    //   aggregation: "count"
+    // }
     // {
     //   "uniqueName": "Q6 We would like to learn a little bit more about how you structure meal time between home, work and school. Which of these best describes you?",
     //   "aggregation": "sum"
@@ -196,148 +197,164 @@ const PurpicsPivot = () => {
       default:
         chartType = config.type;
     }
-    console.log("chartType: ", chartType);
-    myRef.webdatarocks.highcharts.getData(
-      {
-        type: chartType
-      },
+    // myRef.webdatarocks.getData(
+    //   {
+    //     slice: {
+    //       rows: rows,
+    //       columns: columns,
+    //       measures: measures
+    //     }
+    //   },
+    //   function(data) {
+    //     console.log("data123", data);
+    //   }
+    // );
+    myRef &&
+      myRef.webdatarocks &&
+      myRef.webdatarocks.highcharts.getData(
+        {
+          type: chartType
+        },
 
-      function(data) {
-        console.log("graph config >>  data:: ", data);
-        data.chart.height = config.height;
-        data.chart.reflow = config.reflow;
-        data.chart.events = {
-          load: function() {
-            console.log("loaded chart");
-            document
-              .getElementById("custom-title")
-              .addEventListener("click", handleTitleClick);
-            document
-              .getElementById("custom-subtitle")
-              .addEventListener("click", handleSubTitleClick);
-            console.log("config.type: ", config.type);
-            if (
-              config.type !== "pie" &&
-              config.type !== "donut" &&
-              config.type !== "3d-pie" &&
-              config.type !== "3d-donut" &&
-              config.type !== "semi-circle-donut" &&
-              document.getElementById("custom-x-axis-title") &&
-              document.getElementById("custom-y-axis-title")
-            ) {
-              console.log("config.type in if");
+        function(chartConfig) {
+          console.log("graph config >>  data:: ", chartConfig);
+          chartConfig.chart.height = config.height;
+          chartConfig.chart.reflow = config.reflow;
+          chartConfig.chart.events = {
+            load: function() {
+              console.log("loaded chart");
               document
-                .getElementById("custom-x-axis-title")
-                .addEventListener("click", e => handleAxisTitleClick(e, "x"));
+                .getElementById("custom-title")
+                .addEventListener("click", handleTitleClick);
               document
-                .getElementById("custom-y-axis-title")
-                .addEventListener("click", e => handleAxisTitleClick(e, "y"));
-            }
-          },
-          click: function() {
-            console.log("chart clickedd");
-          }
-        };
-        // data.chart.height = config.height
-        data.chart.backgroundColor = "#fff";
-        data.chart.borderColor = "#EBBA95";
-        data.chart.borderRadius = 20;
-        data.chart.borderWidth = 2;
-        data.chart.reflow = config.reflow;
-        if (config.type === "3d-pie" || config.type === "3d-donut") {
-          data.chart.options3d = {
-            enabled: true,
-            alpha: 45,
-            beta: 0
-          };
-          data.chart.polar = false;
-        }
-        console.log("data.chart: ", data.chart);
-        data.title = {
-          text: `<p style="color: red;cursor:pointer;" id="custom-title"> LOL </p>`,
-          style: {
-            color: "#000",
-            fontWeight: "bold",
-            fontFamily: "Roboto"
-          }
-        };
-        data.subtitle = {
-          text: `<p style="color: blue;cursor:pointer;" id="custom-subtitle"> LOL-subtitle </p>`,
-          style: {
-            color: "#000",
-            fontWeight: "normal"
-            // fontFamily: 'Roboto',
-            // fontFamily: 'Rubik',
-            // fontFamily: 'Roboto slab',
-            // fontFamily: 'Script MT',
-          }
-        };
-        data.credits = {
-          enabled: false
-        };
-        data.tooltip = {
-          enabled: true
-        };
-        data.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${data.xAxis.title.text} </p>`;
-        if (data.yAxis && data.yAxis[0] && data.yAxis[0].title.text)
-          data.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${data.yAxis[0].title.text} </p>`;
-
-        let seriesData = data.series;
-        seriesData.map(
-          e =>
-            (e.events = {
-              legendItemClick: function() {
-                console.log("legendItemClick::: ", this);
-              }
-            })
-        );
-        data.series = seriesData;
-
-        let plotOptions = {
-          pie:
-            config.type === "donut"
-              ? getPlotOptionsForDonut()
-              : config.type === "3d-donut"
-              ? getPlotOptionsFor3dDonut()
-              : config.type === "3d-pie"
-              ? getPlotOptionsFor3dPie()
-              : config.type === "semi-circle-donut"
-              ? getPlotOptionsForSemicircleDonut()
-              : {},
-
-          series: {
-            cursor: "pointer",
-            stacking: getStackingGraphConfig(config.type),
-
-            point: {
-              events: {
-                click: function() {
-                  console.log("seriesClick::: ", this);
-                }
+                .getElementById("custom-subtitle")
+                .addEventListener("click", handleSubTitleClick);
+              console.log("config.type: ", config.type);
+              if (
+                config.type !== "pie" &&
+                config.type !== "donut" &&
+                config.type !== "3d-pie" &&
+                config.type !== "3d-donut" &&
+                config.type !== "semi-circle-donut" &&
+                document.getElementById("custom-x-axis-title") &&
+                document.getElementById("custom-y-axis-title")
+              ) {
+                console.log("config.type in if");
+                document
+                  .getElementById("custom-x-axis-title")
+                  .addEventListener("click", e => handleAxisTitleClick(e, "x"));
+                document
+                  .getElementById("custom-y-axis-title")
+                  .addEventListener("click", e => handleAxisTitleClick(e, "y"));
               }
             },
-            dataLabels: {
-              enabled: true
+            click: function() {
+              console.log("chart clickedd");
             }
+          };
+          // data.chart.height = config.height
+          chartConfig.chart.backgroundColor = "#fff";
+          chartConfig.chart.borderColor = "#EBBA95";
+          chartConfig.chart.borderRadius = 20;
+          chartConfig.chart.borderWidth = 2;
+          chartConfig.chart.reflow = config.reflow;
+          if (config.type === "3d-pie" || config.type === "3d-donut") {
+            chartConfig.chart.options3d = {
+              enabled: true,
+              alpha: 45,
+              beta: 0
+            };
+            chartConfig.chart.polar = false;
           }
-        };
+          console.log("data.chart: ", chartConfig.chart);
+          chartConfig.title = {
+            text: `<p style="color: red;cursor:pointer;" id="custom-title"> LOL </p>`,
+            style: {
+              color: "#000",
+              fontWeight: "bold",
+              fontFamily: "Roboto"
+            }
+          };
+          chartConfig.subtitle = {
+            text: `<p style="color: blue;cursor:pointer;" id="custom-subtitle"> LOL-subtitle </p>`,
+            style: {
+              color: "#000",
+              fontWeight: "normal"
+              // fontFamily: 'Roboto',
+              // fontFamily: 'Rubik',
+              // fontFamily: 'Roboto slab',
+              // fontFamily: 'Script MT',
+            }
+          };
+          chartConfig.credits = {
+            enabled: false
+          };
+          chartConfig.tooltip = {
+            enabled: true
+          };
+          chartConfig.xAxis.title.text = `<p style="cursor:pointer;" id="custom-x-axis-title"> ${chartConfig.xAxis.title.text} </p>`;
+          if (
+            chartConfig.yAxis &&
+            chartConfig.yAxis[0] &&
+            chartConfig.yAxis[0].title.text
+          )
+            chartConfig.yAxis[0].title.text = `<p style="cursor:pointer;" id="custom-y-axis-title"> ${chartConfig.yAxis[0].title.text} </p>`;
 
-        if (
-          config.type === "multicolor-bar" ||
-          config.type === "multicolor-column"
-        ) {
-          plotOptions.series.colorByPoint = true;
+          let seriesData = chartConfig.series;
+          seriesData.map(
+            e =>
+              (e.events = {
+                legendItemClick: function() {
+                  console.log("legendItemClick::: ", this);
+                }
+              })
+          );
+          chartConfig.series = seriesData;
+
+          let plotOptions = {
+            pie:
+              config.type === "donut"
+                ? getPlotOptionsForDonut()
+                : config.type === "3d-donut"
+                ? getPlotOptionsFor3dDonut()
+                : config.type === "3d-pie"
+                ? getPlotOptionsFor3dPie()
+                : config.type === "semi-circle-donut"
+                ? getPlotOptionsForSemicircleDonut()
+                : {},
+
+            series: {
+              cursor: "pointer",
+              stacking: getStackingGraphConfig(config.type),
+
+              point: {
+                events: {
+                  click: function() {
+                    console.log("seriesClick::: ", this);
+                  }
+                }
+              },
+              dataLabels: {
+                enabled: true
+              }
+            }
+          };
+
+          if (
+            config.type === "multicolor-bar" ||
+            config.type === "multicolor-column"
+          ) {
+            plotOptions.series.colorByPoint = true;
+          }
+
+          chartConfig.plotOptions = plotOptions;
+          console.log("graph final data: ", chartConfig);
+          Highcharts.chart("highchartsContainer", chartConfig);
+        },
+        function(chartConfig) {
+          Highcharts.chart("highchartsContainer", chartConfig);
         }
-
-        data.plotOptions = plotOptions;
-        console.log("graph final data: ", data);
-        Highcharts.chart("highchartsContainer", data);
-      },
-      function(data) {
-        Highcharts.chart("highchartsContainer", data);
-        // Highcharts.reflow();
-      }
-    );
+      );
   };
 
   const report = {
@@ -566,6 +583,29 @@ const PurpicsPivot = () => {
   };
 
   const handleChartChange = type => {
+    console.log("type ", type);
+    if (type === "scatter") {
+      setMeasures([
+        {
+          uniqueName:
+            "Q20 Would you be interested in ordering from a food locker like this?",
+          aggregation: "count"
+        },
+        {
+          uniqueName: "Q8 Do you have a meal plan for on-campus dining?",
+          aggregation: "count"
+        }
+      ]);
+    } else {
+      setMeasures([
+        {
+          uniqueName:
+            "Q20 Would you be interested in ordering from a food locker like this?",
+          aggregation: "count"
+        }
+      ]);
+    }
+
     config.type = type;
     setConfig({ ...config });
     createChart();
@@ -614,7 +654,6 @@ const PurpicsPivot = () => {
     console.log("type, value: ", type, value);
     optionsConfig[type] = value;
     setOptionsConfig({ ...optionsConfig });
-    // myRef && myRef.webdatarocks && myRef.webdatarocks.refresh();
   };
 
   useEffect(() => {
@@ -625,23 +664,6 @@ const PurpicsPivot = () => {
       setDisplay(true);
     }, 50);
   }, [rows, columns, measures, optionsConfig]);
-
-  useEffect(() => {
-    if (myRef && myRef.webdatarocks) {
-      console.log("value changed:-> ", value);
-      // myRef &&
-      //   myRef.webdatarocks.on("fieldslistclose", function() {
-      //     // alert("Field list is opened!");
-      //     console.log(">>> ", myRef);
-      //     myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
-      //   });
-      if (value === 0) {
-        myRef && myRef.webdatarocks && myRef.webdatarocks.openFieldsList();
-      } else {
-        myRef && myRef.webdatarocks && myRef.webdatarocks.closeFieldsList();
-      }
-    }
-  }, [value]);
 
   return (
     // style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}
