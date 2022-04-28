@@ -7,6 +7,9 @@ import { DataJson } from "./DataJson";
 import TabPanel from "./TabPanel";
 import { makeStyles, Tab, Tabs } from "@material-ui/core";
 import OptionsTab from "./OptionsTab";
+import HighchartsExporting from "highcharts/modules/exporting";
+
+HighchartsExporting(Highcharts);
 
 highcharts3d(Highcharts);
 
@@ -665,6 +668,18 @@ const PurpicsPivot = () => {
     }, 50);
   }, [rows, columns, measures, optionsConfig]);
 
+  async function exportPDF() {
+    Highcharts.charts.forEach(function(chart, index) {
+      if (chart) {
+        if (chart.renderTo.id === "highchartsContainer") {
+          chart.exportChart({
+            type: "application/pdf"
+          });
+        }
+      }
+    });
+  }
+
   return (
     // style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}
     display && (
@@ -723,7 +738,10 @@ const PurpicsPivot = () => {
               });
             }}
           >
-            <div id="highchartsContainer" />
+            <div
+              id="highchartsContainer"
+              style={{ width: "100%", height: "100%" }}
+            />
           </div>
         </div>
         <div className={classes.root}>
@@ -1026,6 +1044,19 @@ const PurpicsPivot = () => {
             }}
           >
             Append New Data
+          </button>
+          <button
+            onClick={exportPDF}
+            style={{
+              background: "#009dff",
+              color: "#fff",
+              border: "0px",
+              margin: "5px 5px 0px",
+              borderRadius: "5px",
+              cursor: "pointer"
+            }}
+          >
+            EXPORT
           </button>
         </div>
       </div>
